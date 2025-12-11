@@ -110,7 +110,55 @@
 
 .month-data {
   color: #666666;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.month-data-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.month-performance {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.month-performance.positive {
+  color: #00ff00;
+}
+
+.month-performance.negative {
+  color: #ff0000;
+}
+
+.month-allocation {
+  color: #ff8c00;
+  font-size: 10px;
+  font-weight: normal;
+}
+
+.current-month {
+  border: 1px solid #444400 !important;
+  background-color: #0d0d00 !important;
+}
+
+.in-progress {
+  margin-left: 4px;
+  color: #ffff00;
+  font-size: 12px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .ticker-input,
@@ -135,6 +183,68 @@
   outline: none;
   border-color: #00ff00;
   box-shadow: 0 0 10px #00ff00;
+}
+
+.percent-start-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.percent-date-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.date-added {
+  color: #ff8c00;
+  font-size: 11px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.percent-input-small {
+  width: 100%;
+  background-color: #1a1a1a;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  padding: 4px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+.percent-input-small::placeholder {
+  color: #006600;
+}
+
+.percent-input-small:focus {
+  outline: none;
+  border-color: #00ff00;
+  box-shadow: 0 0 10px #00ff00;
+}
+
+.month-select {
+  width: 100%;
+  background-color: #1a1a1a;
+  color: #ff8c00;
+  border: 2px solid #ff8c00;
+  padding: 4px;
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.month-select:focus {
+  outline: none;
+  border-color: #ff8c00;
+  box-shadow: 0 0 10px #ff8c00;
 }
 
 .input-row {

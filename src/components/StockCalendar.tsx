@@ -5,6 +5,9 @@ interface StockPosition {
   id: string;
   ticker: string;
   percentage: string;
+  monthlyPerformance: number[];
+  dateAdded: string;
+  startMonth: number;
 }
 
 interface YearData {
@@ -22,18 +25,63 @@ function StockCalendar() {
   const [yearData, setYearData] = useState<YearData>({});
   const [newTicker, setNewTicker] = useState('');
   const [newPercentage, setNewPercentage] = useState('');
+  const [newStartMonth, setNewStartMonth] = useState(0);
   const tickerInputRef = useRef<HTMLInputElement>(null);
 
   // Get positions for the currently selected year
   const positions = yearData[selectedYear] || [];
 
+  // Calculate which months have passed for a given year
+  const getPassedMonths = (year: number): number => {
+    const now = new Date();
+    const currentYearNum = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0-11
+    
+    if (year < currentYearNum) {
+      return 12; // All months passed
+    } else if (year === currentYearNum) {
+      return currentMonth + 1; // Months passed including current
+    } else {
+      return 0; // Future year, no months passed
+    }
+  };
+
+  // Simulate randomized stock movements starting from a specific month
+  const simulateStockMovements = (passedMonths: number, startMonth: number): number[] => {
+    const movements: number[] = [];
+    
+    for (let i = 0; i < 12; i++) {
+      // Only generate data for months >= startMonth and < passedMonths
+      if (i >= startMonth && i < passedMonths) {
+        // Generate random percentage change between -15% and +15%
+        const change = (Math.random() * 30 - 15).toFixed(2);
+        movements.push(parseFloat(change));
+      } else {
+        // Months before start or after current month have no data
+        movements.push(0);
+      }
+    }
+    
+    return movements;
+  };
+
   const addPosition = () => {
     if (newTicker.trim() === '') return;
+    
+    const passedMonths = getPassedMonths(selectedYear);
+    const monthlyPerformance = simulateStockMovements(passedMonths, newStartMonth);
+    
+    // Create date from selected year and start month (first day of the month)
+    const date = new Date(selectedYear, newStartMonth, 1);
+    const dateAdded = date.toISOString().split('T')[0]; // YYYY-MM-DD format
     
     const position: StockPosition = {
       id: Date.now().toString(),
       ticker: newTicker.toUpperCase(),
-      percentage: newPercentage || '0'
+      percentage: newPercentage || '0',
+      monthlyPerformance,
+      dateAdded,
+      startMonth: newStartMonth
     };
     
     const currentPositions = yearData[selectedYear] || [];
@@ -43,6 +91,7 @@ function StockCalendar() {
     });
     setNewTicker('');
     setNewPercentage('');
+    // Keep newStartMonth - don't reset it
     
     // Focus back on ticker input
     setTimeout(() => tickerInputRef.current?.focus(), 0);
@@ -111,20 +160,49 @@ function StockCalendar() {
           <div key={position.id} className="grid-row">
             <div className="cell data-cell ticker-col">{position.ticker}</div>
             <div className="cell data-cell percent-col">
-              <input
-                type="number"
-                value={position.percentage}
-                onChange={(e) => updatePercentage(position.id, e.target.value)}
-                className="percent-input"
-                min="0"
-                max="100"
-              />
-            </div>
-            {MONTHS.map((month) => (
-              <div key={month} className="cell data-cell month-col">
-                <div className="month-data">-</div>
+              <div className="percent-date-container">
+                <input
+                  type="number"
+                  value={position.percentage}
+                  onChange={(e) => updatePercentage(position.id, e.target.value)}
+                  className="percent-input"
+                  min="0"
+                  max="100"
+                />
+                <div className="date-added">{MONTHS[position.startMonth]}</div>
               </div>
-            ))}
+            </div>
+            {MONTHS.map((month, index) => {
+              const performance = position.monthlyPerformance[index];
+              const hasData = performance !== 0;
+              const isPositive = performance > 0;
+              
+              // Check if this is the current month
+              const now = new Date();
+              const isCurrentMonth = selectedYear === now.getFullYear() && index === now.getMonth();
+              
+              // Calculate adjusted allocation
+              const baseAllocation = parseFloat(position.percentage) || 0;
+              const adjustedAllocation = baseAllocation * (1 + performance / 100);
+              
+              return (
+                <div key={month} className={`cell data-cell month-col ${isCurrentMonth ? 'current-month' : ''}`}>
+                  {hasData ? (
+                    <div className="month-data-container">
+                      <div className={`month-performance ${isPositive ? 'positive' : 'negative'}`}>
+                        {isPositive ? '+' : ''}{performance.toFixed(2)}%
+                        {isCurrentMonth && <span className="in-progress">⟳</span>}
+                      </div>
+                      <div className="month-allocation">
+                        {adjustedAllocation.toFixed(2)}%
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="month-data">-</div>
+                  )}
+                </div>
+              );
+            })}
             <div className="cell data-cell action-col">
               <button 
                 onClick={() => removePosition(position.id)}
@@ -151,16 +229,33 @@ function StockCalendar() {
             />
           </div>
           <div className="cell data-cell percent-col">
-            <input
-              type="number"
-              value={newPercentage}
-              onChange={(e) => setNewPercentage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="%"
-              className="percent-input"
-              min="0"
-              max="100"
-            />
+            <div className="percent-start-container">
+              <input
+                type="number"
+                value={newPercentage}
+                onChange={(e) => setNewPercentage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="%"
+                className="percent-input-small"
+                min="0"
+                max="100"
+              />
+              <select
+                value={newStartMonth}
+                onChange={(e) => {
+                  const newValue = parseInt(e.target.value);
+                  setNewStartMonth(newValue);
+                  // If user clicked to select (even if same value), add position
+                  addPosition();
+                }}
+                onKeyPress={handleKeyPress}
+                className="month-select"
+              >
+                {MONTHS.map((month, index) => (
+                  <option key={month} value={index}>{month}</option>
+                ))}
+              </select>
+            </div>
           </div>
           {MONTHS.map((month) => (
             <div key={month} className="cell data-cell month-col">
