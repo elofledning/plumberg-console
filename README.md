@@ -6,6 +6,8 @@ Yearly stock dashboard One-Stop-Shop with Bloomberg Terminal-style interface.
 
 A React TypeScript frontend application featuring a retro Bloomberg Terminal aesthetic for managing stock portfolios across a yearly calendar view.
 
+![alt text](image.png)
+
 ## Features
 
 - **Bloomberg Terminal Retro Style**: Black background with iconic orange (#ff8c00) and green accents
