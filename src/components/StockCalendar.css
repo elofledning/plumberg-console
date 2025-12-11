@@ -1,0 +1,204 @@
+.stock-calendar {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.calendar-header {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ff8c00;
+}
+
+.calendar-header h2 {
+  color: #ff8c00;
+  font-size: 20px;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.calendar-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background-color: #1a1a1a;
+  padding: 2px;
+  border: 2px solid #ff8c00;
+}
+
+.grid-header,
+.grid-row {
+  display: grid;
+  grid-template-columns: 120px 80px repeat(12, 80px) 100px;
+  gap: 2px;
+}
+
+.cell {
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.header-cell {
+  background-color: #ff8c00;
+  color: #000000;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.data-cell {
+  background-color: #000000;
+  color: #ff8c00;
+  border: 1px solid #333333;
+}
+
+.ticker-col {
+  justify-content: flex-start;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.percent-col {
+  justify-content: center;
+}
+
+.month-col {
+  font-size: 12px;
+}
+
+.action-col {
+  justify-content: center;
+}
+
+.month-data {
+  color: #666666;
+  font-size: 14px;
+}
+
+.ticker-input,
+.percent-input {
+  width: 100%;
+  background-color: #1a1a1a;
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  padding: 6px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+.ticker-input::placeholder,
+.percent-input::placeholder {
+  color: #006600;
+}
+
+.ticker-input:focus,
+.percent-input:focus {
+  outline: none;
+  border-color: #00ff00;
+  box-shadow: 0 0 10px #00ff00;
+}
+
+.input-row {
+  background-color: #1a1a1a;
+}
+
+.input-row .data-cell {
+  border-color: #00ff00;
+}
+
+.add-btn,
+.remove-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.add-btn {
+  background-color: #000000;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+}
+
+.add-btn:hover {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+.remove-btn {
+  background-color: #000000;
+  border: 2px solid #ff0000;
+  color: #ff0000;
+}
+
+.remove-btn:hover {
+  background-color: #ff0000;
+  color: #000000;
+}
+
+.calendar-footer {
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 2px solid #ff8c00;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-text {
+  color: #ff8c00;
+  font-size: 14px;
+}
+
+.blink {
+  animation: blink-animation 1s steps(2, start) infinite;
+  color: #00ff00;
+  margin-right: 8px;
+}
+
+@keyframes blink-animation {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .grid-header,
+  .grid-row {
+    grid-template-columns: 100px 70px repeat(12, 70px) 90px;
+  }
+  
+  .cell {
+    padding: 6px;
+    min-height: 35px;
+  }
+}
+
+/* Scrollbar styling for Bloomberg Terminal feel */
+.stock-calendar::-webkit-scrollbar {
+  height: 12px;
+}
+
+.stock-calendar::-webkit-scrollbar-track {
+  background: #000000;
+  border: 1px solid #ff8c00;
+}
+
+.stock-calendar::-webkit-scrollbar-thumb {
+  background: #ff8c00;
+  border: 1px solid #000000;
+}
+
+.stock-calendar::-webkit-scrollbar-thumb:hover {
+  background: #ffa500;
+}
