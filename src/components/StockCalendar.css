@@ -8,6 +8,9 @@
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 2px solid #ff8c00;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .calendar-header h2 {
@@ -15,6 +18,38 @@
   font-size: 20px;
   letter-spacing: 2px;
   margin: 0;
+}
+
+.year-selector {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.year-display {
+  color: #ff8c00;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.year-btn {
+  background-color: #000000;
+  border: 2px solid #ff8c00;
+  color: #ff8c00;
+  padding: 6px 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.year-btn:hover {
+  background-color: #ff8c00;
+  color: #000000;
+  box-shadow: 0 0 10px #ff8c00;
 }
 
 .calendar-grid {

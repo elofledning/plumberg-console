@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './StockCalendar.css';
 
 interface StockPosition {
@@ -7,15 +7,25 @@ interface StockPosition {
   percentage: string;
 }
 
+interface YearData {
+  [year: number]: StockPosition[];
+}
+
 const MONTHS = [
   'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
   'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
 ];
 
 function StockCalendar() {
-  const [positions, setPositions] = useState<StockPosition[]>([]);
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [yearData, setYearData] = useState<YearData>({});
   const [newTicker, setNewTicker] = useState('');
   const [newPercentage, setNewPercentage] = useState('');
+  const tickerInputRef = useRef<HTMLInputElement>(null);
+
+  // Get positions for the currently selected year
+  const positions = yearData[selectedYear] || [];
 
   const addPosition = () => {
     if (newTicker.trim() === '') return;
@@ -26,19 +36,34 @@ function StockCalendar() {
       percentage: newPercentage || '0'
     };
     
-    setPositions([...positions, position]);
+    const currentPositions = yearData[selectedYear] || [];
+    setYearData({
+      ...yearData,
+      [selectedYear]: [...currentPositions, position]
+    });
     setNewTicker('');
     setNewPercentage('');
+    
+    // Focus back on ticker input
+    setTimeout(() => tickerInputRef.current?.focus(), 0);
   };
 
   const removePosition = (id: string) => {
-    setPositions(positions.filter(pos => pos.id !== id));
+    const currentPositions = yearData[selectedYear] || [];
+    setYearData({
+      ...yearData,
+      [selectedYear]: currentPositions.filter(pos => pos.id !== id)
+    });
   };
 
   const updatePercentage = (id: string, value: string) => {
-    setPositions(positions.map(pos => 
-      pos.id === id ? { ...pos, percentage: value } : pos
-    ));
+    const currentPositions = yearData[selectedYear] || [];
+    setYearData({
+      ...yearData,
+      [selectedYear]: currentPositions.map(pos => 
+        pos.id === id ? { ...pos, percentage: value } : pos
+      )
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -51,6 +76,21 @@ function StockCalendar() {
     <div className="stock-calendar">
       <div className="calendar-header">
         <h2>PORTFOLIO CALENDAR MATRIX</h2>
+        <div className="year-selector">
+          <button 
+            onClick={() => setSelectedYear(selectedYear - 1)}
+            className="year-btn"
+          >
+            ◀
+          </button>
+          <span className="year-display">{selectedYear}</span>
+          <button 
+            onClick={() => setSelectedYear(selectedYear + 1)}
+            className="year-btn"
+          >
+            ▶
+          </button>
+        </div>
       </div>
       
       <div className="calendar-grid">
@@ -100,6 +140,7 @@ function StockCalendar() {
         <div className="grid-row input-row">
           <div className="cell data-cell ticker-col">
             <input
+              ref={tickerInputRef}
               type="text"
               value={newTicker}
               onChange={(e) => setNewTicker(e.target.value)}
