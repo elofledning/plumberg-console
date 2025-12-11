@@ -19,10 +19,53 @@ const MONTHS = [
   'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
 ];
 
+// Generate mockup data
+const generateMockupData = (year: number): StockPosition[] => {
+  const tickers = ['TSLA', 'PLTR', 'NVDA', 'MSTR', 'BMNR', 'AMD', 'CLSK'];
+  
+  // Generate random percentages that sum to 100
+  const randomValues = tickers.map(() => Math.random());
+  const sum = randomValues.reduce((a, b) => a + b, 0);
+  const percentages = randomValues.map(v => ((v / sum) * 100).toFixed(2));
+  
+  const now = new Date();
+  const passedMonths = year < now.getFullYear() ? 12 : 
+                      year === now.getFullYear() ? now.getMonth() + 1 : 0;
+  
+  return tickers.map((ticker, index) => {
+    // Random start month in first half of year (0-5 for JAN-JUN)
+    const startMonth = Math.floor(Math.random() * 6);
+    const monthlyPerformance: number[] = [];
+    
+    for (let i = 0; i < 12; i++) {
+      if (i >= startMonth && i < passedMonths) {
+        const change = (Math.random() * 30 - 15).toFixed(2);
+        monthlyPerformance.push(parseFloat(change));
+      } else {
+        monthlyPerformance.push(0);
+      }
+    }
+    
+    const date = new Date(year, startMonth, 1);
+    const dateAdded = date.toISOString().split('T')[0];
+    
+    return {
+      id: `mockup-${index}`,
+      ticker,
+      percentage: percentages[index],
+      monthlyPerformance,
+      dateAdded,
+      startMonth
+    };
+  });
+};
+
 function StockCalendar() {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [yearData, setYearData] = useState<YearData>({});
+  const [yearData, setYearData] = useState<YearData>(() => ({
+    [currentYear]: generateMockupData(currentYear)
+  }));
   const [newTicker, setNewTicker] = useState('');
   const [newPercentage, setNewPercentage] = useState('');
   const [newStartMonth, setNewStartMonth] = useState(0);
@@ -182,9 +225,17 @@ function StockCalendar() {
               const now = new Date();
               const isCurrentMonth = selectedYear === now.getFullYear() && index === now.getMonth();
               
-              // Calculate adjusted allocation
+              // Calculate accumulated allocation up to this month
               const baseAllocation = parseFloat(position.percentage) || 0;
-              const adjustedAllocation = baseAllocation * (1 + performance / 100);
+              let accumulated = baseAllocation;
+              
+              // Apply all monthly performances up to and including this month
+              for (let i = 0; i <= index; i++) {
+                const perf = position.monthlyPerformance[i];
+                if (perf !== 0) {
+                  accumulated = accumulated * (1 + perf / 100);
+                }
+              }
               
               return (
                 <div key={month} className={`cell data-cell month-col ${isCurrentMonth ? 'current-month' : ''}`}>
@@ -195,7 +246,7 @@ function StockCalendar() {
                         {isCurrentMonth && <span className="in-progress">⟳</span>}
                       </div>
                       <div className="month-allocation">
-                        {adjustedAllocation.toFixed(2)}%
+                        {accumulated.toFixed(2)}%
                       </div>
                     </div>
                   ) : (
@@ -216,17 +267,9 @@ function StockCalendar() {
                   }
                 });
                 
-                const totalChange = accumulated - baseAllocation;
-                const isPositive = totalChange > 0;
-                
                 return (
-                  <div className="total-data-container">
-                    <div className={`total-performance ${isPositive ? 'positive' : 'negative'}`}>
-                      {isPositive ? '+' : ''}{totalChange.toFixed(2)}%
-                    </div>
-                    <div className="total-allocation">
-                      {accumulated.toFixed(2)}%
-                    </div>
+                  <div className="total-percentage-value">
+                    {accumulated.toFixed(2)}%
                   </div>
                 );
               })()}
@@ -313,30 +356,35 @@ function StockCalendar() {
       <div className="portfolio-summary">
         <div className="summary-item">
           <span className="summary-label">TOTAL PORTFOLIO ALLOCATION:</span>
-          <span className="summary-value">
+          <span className="summary-value summary-orange">
             {positions.reduce((sum, pos) => sum + (parseFloat(pos.percentage) || 0), 0).toFixed(2)}%
           </span>
         </div>
         <div className="summary-item">
           <span className="summary-label">CURRENT TOTAL VALUE:</span>
-          <span className="summary-value">
-            {(() => {
-              const currentTotal = positions.reduce((sum, pos) => {
-                const baseAllocation = parseFloat(pos.percentage) || 0;
-                let accumulated = baseAllocation;
-                
-                pos.monthlyPerformance.forEach((perf) => {
-                  if (perf !== 0) {
-                    accumulated = accumulated * (1 + perf / 100);
-                  }
-                });
-                
-                return sum + accumulated;
-              }, 0);
+          {(() => {
+            const totalAllocated = positions.reduce((sum, pos) => sum + (parseFloat(pos.percentage) || 0), 0);
+            const currentTotal = positions.reduce((sum, pos) => {
+              const baseAllocation = parseFloat(pos.percentage) || 0;
+              let accumulated = baseAllocation;
               
-              return currentTotal.toFixed(2);
-            })()}%
-          </span>
+              pos.monthlyPerformance.forEach((perf) => {
+                if (perf !== 0) {
+                  accumulated = accumulated * (1 + perf / 100);
+                }
+              });
+              
+              return sum + accumulated;
+            }, 0);
+            
+            const isPositive = currentTotal >= totalAllocated;
+            
+            return (
+              <span className={`summary-value ${isPositive ? 'summary-positive' : 'summary-negative'}`}>
+                {currentTotal.toFixed(2)}%
+              </span>
+            );
+          })()}
         </div>
       </div>
     </div>

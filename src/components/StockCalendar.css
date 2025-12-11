@@ -2,6 +2,8 @@
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .calendar-header {
@@ -53,12 +55,14 @@
 }
 
 .calendar-grid {
-  display: flex;
-  flex-direction: column;
+  display: inline-block;
   gap: 2px;
   background-color: #1a1a1a;
   padding: 2px;
   border: 2px solid #ff8c00;
+  width: fit-content;
+  overflow-x: auto;
+  margin: 0 auto;
 }
 
 .grid-header,
@@ -93,7 +97,7 @@
 .ticker-col {
   justify-content: flex-start;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .percent-col {
@@ -101,7 +105,7 @@
 }
 
 .month-col {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .action-col {
@@ -138,7 +142,7 @@
 }
 
 .month-performance {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: bold;
 }
 
@@ -152,7 +156,7 @@
 
 .month-allocation {
   color: #ff8c00;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: normal;
 }
 
@@ -164,7 +168,7 @@
 }
 
 .total-performance {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: bold;
 }
 
@@ -178,8 +182,15 @@
 
 .total-allocation {
   color: #ff8c00;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: bold;
+}
+
+.total-percentage-value {
+  color: #ff8c00;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
 }
 
 .current-month {
@@ -209,8 +220,8 @@
   background-color: #1a1a1a;
   color: #00ff00;
   border: 2px solid #00ff00;
-  padding: 6px;
-  font-size: 14px;
+  padding: 6px 4px;
+  font-size: 12px;
   font-family: 'Courier New', monospace;
   font-weight: bold;
 }
@@ -243,7 +254,7 @@
 
 .date-added {
   color: #ff8c00;
-  font-size: 11px;
+  font-size: 12px;
   text-align: center;
   font-family: 'Courier New', monospace;
   font-weight: bold;
@@ -255,8 +266,8 @@
   background-color: #1a1a1a;
   color: #00ff00;
   border: 2px solid #00ff00;
-  padding: 4px;
-  font-size: 12px;
+  padding: 4px 2px;
+  font-size: 11px;
   font-family: 'Courier New', monospace;
   font-weight: bold;
 }
@@ -402,6 +413,21 @@
   font-weight: bold;
   font-family: 'Courier New', monospace;
   text-shadow: 0 0 5px #00ff00;
+}
+
+.summary-value.summary-orange {
+  color: #ff8c00;
+  text-shadow: 0 0 5px #ff8c00;
+}
+
+.summary-value.summary-positive {
+  color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+.summary-value.summary-negative {
+  color: #ff0000;
+  text-shadow: 0 0 5px #ff0000;
 }
 
 /* Scrollbar styling for Bloomberg Terminal feel */
