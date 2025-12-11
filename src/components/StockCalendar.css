@@ -64,7 +64,7 @@
 .grid-header,
 .grid-row {
   display: grid;
-  grid-template-columns: 120px 80px repeat(12, 80px) 100px;
+  grid-template-columns: 120px 80px repeat(12, 80px) 100px 100px;
   gap: 2px;
 }
 
@@ -108,6 +108,22 @@
   justify-content: center;
 }
 
+.total-col {
+  justify-content: center;
+  font-size: 12px;
+  border-left: 2px solid #ff8c00 !important;
+}
+
+.header-cell.total-col {
+  background-color: #ff8c00;
+  color: #000000;
+}
+
+.data-cell.total-col {
+  background-color: #0a0a00;
+  border: 2px solid #ff8c00;
+}
+
 .month-data {
   color: #666666;
   font-size: 12px;
@@ -138,6 +154,32 @@
   color: #ff8c00;
   font-size: 10px;
   font-weight: normal;
+}
+
+.total-data-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.total-performance {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.total-performance.positive {
+  color: #00ff00;
+}
+
+.total-performance.negative {
+  color: #ff0000;
+}
+
+.total-allocation {
+  color: #ff8c00;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .current-month {
@@ -327,6 +369,39 @@
     padding: 6px;
     min-height: 35px;
   }
+}
+
+/* Portfolio Summary */
+.portfolio-summary {
+  margin-top: 20px;
+  padding: 15px;
+  border: 2px solid #ff8c00;
+  background-color: #0a0a0a;
+  display: flex;
+  justify-content: space-around;
+  gap: 30px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.summary-label {
+  color: #ff8c00;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.summary-value {
+  color: #00ff00;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px #00ff00;
 }
 
 /* Scrollbar styling for Bloomberg Terminal feel */

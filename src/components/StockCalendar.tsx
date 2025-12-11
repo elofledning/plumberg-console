@@ -152,6 +152,7 @@ function StockCalendar() {
               {month}
             </div>
           ))}
+          <div className="cell header-cell total-col">TOTAL %</div>
           <div className="cell header-cell action-col">ACTION</div>
         </div>
 
@@ -203,6 +204,33 @@ function StockCalendar() {
                 </div>
               );
             })}
+            <div className="cell data-cell total-col">
+              {(() => {
+                // Calculate accumulated percentage across all months
+                const baseAllocation = parseFloat(position.percentage) || 0;
+                let accumulated = baseAllocation;
+                
+                position.monthlyPerformance.forEach((perf) => {
+                  if (perf !== 0) {
+                    accumulated = accumulated * (1 + perf / 100);
+                  }
+                });
+                
+                const totalChange = accumulated - baseAllocation;
+                const isPositive = totalChange > 0;
+                
+                return (
+                  <div className="total-data-container">
+                    <div className={`total-performance ${isPositive ? 'positive' : 'negative'}`}>
+                      {isPositive ? '+' : ''}{totalChange.toFixed(2)}%
+                    </div>
+                    <div className="total-allocation">
+                      {accumulated.toFixed(2)}%
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
             <div className="cell data-cell action-col">
               <button 
                 onClick={() => removePosition(position.id)}
@@ -262,6 +290,9 @@ function StockCalendar() {
               <div className="month-data">-</div>
             </div>
           ))}
+          <div className="cell data-cell total-col">
+            <div className="month-data">-</div>
+          </div>
           <div className="cell data-cell action-col">
             <button onClick={addPosition} className="add-btn">
               ADD
@@ -276,6 +307,36 @@ function StockCalendar() {
         </div>
         <div className="info-text">
           Total Positions: {positions.length}
+        </div>
+      </div>
+
+      <div className="portfolio-summary">
+        <div className="summary-item">
+          <span className="summary-label">TOTAL PORTFOLIO ALLOCATION:</span>
+          <span className="summary-value">
+            {positions.reduce((sum, pos) => sum + (parseFloat(pos.percentage) || 0), 0).toFixed(2)}%
+          </span>
+        </div>
+        <div className="summary-item">
+          <span className="summary-label">CURRENT TOTAL VALUE:</span>
+          <span className="summary-value">
+            {(() => {
+              const currentTotal = positions.reduce((sum, pos) => {
+                const baseAllocation = parseFloat(pos.percentage) || 0;
+                let accumulated = baseAllocation;
+                
+                pos.monthlyPerformance.forEach((perf) => {
+                  if (perf !== 0) {
+                    accumulated = accumulated * (1 + perf / 100);
+                  }
+                });
+                
+                return sum + accumulated;
+              }, 0);
+              
+              return currentTotal.toFixed(2);
+            })()}%
+          </span>
         </div>
       </div>
     </div>
